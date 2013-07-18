@@ -10,6 +10,7 @@
 *.typelib
 .deps
 /aclocal.m4
+/build-aux/*
 /src/.libs
 /Makefile
 /Makefile.old
