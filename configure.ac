@@ -1,7 +1,7 @@
 AC_PREREQ(2.62)
 AC_INIT([gasket], [0.1], [phil@philtweir.co.uk])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.9.6 -Wall -Werror dist-bzip2])
+AM_INIT_AUTOMAKE([1.9.6 -Wall -Werror -Wno-extra-portability dist-bzip2])
 
 AC_PROG_CC
 AM_PROG_CC_C_O
