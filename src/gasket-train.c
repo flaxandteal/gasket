@@ -44,6 +44,7 @@ typedef struct _GasketTrainCarriage GasketTrainCarriage;
 
 struct _GasketTrainPending {
     sem_t sem;
+    gchar test;
     gchar* buffer;
     GOutputStream* stream;
 };
@@ -76,6 +77,7 @@ static GParamSpec *obj_properties[N_PROPERTIES] = { NULL, };
 gboolean _gasket_train_watch_pending(struct _GasketTrainPending *pending);
 gboolean _gasket_train_main_loop_init(void* data);
 gboolean _gasket_train_send_real(struct _GasketTrainPending *pending);
+GMainContext* gasket_main_context = NULL;
 GMainLoop* gasket_main_loop = NULL;
 
 gboolean
@@ -83,8 +85,9 @@ _gasket_train_main_loop_init(void* data)
 {
     if (gasket_main_loop != NULL)
         return;
-    gasket_main_loop = g_main_loop_new(NULL, FALSE);
-    printf("GML: %d\n", gasket_main_loop);
+
+    gasket_main_context = g_main_context_default();
+    gasket_main_loop = g_main_loop_new(gasket_main_context, FALSE);
     g_main_loop_run(gasket_main_loop);
 }
 
@@ -105,6 +108,7 @@ gasket_train_init (GasketTrain *object)
     priv->pending = pending;
     pending->buffer = NULL;
     pending->stream = NULL;
+    pending->test = 'T';
     sem_init(&pending->sem, 0, 1);
     g_thread_new("Main Loop", _gasket_train_main_loop_init, NULL);
 }
@@ -258,7 +262,6 @@ gasket_train_station_send (GasketTrain *train, const gchar* gasket_content)
 gboolean
 _gasket_train_watch_pending(struct _GasketTrainPending *pending)
 {
-    printf("%d\n", gasket_main_loop);
     if (gasket_main_loop == NULL)
         g_thread_new("Main Loop", _gasket_train_main_loop_init, NULL);
 
@@ -270,7 +273,6 @@ _gasket_train_watch_pending(struct _GasketTrainPending *pending)
 gboolean
 _gasket_train_send_real(struct _GasketTrainPending *pending)
 {
-    printf("T\n");
     GError* error = NULL;
     gssize size;
     gsize to_send;
@@ -469,7 +471,7 @@ _gasket_train_set_pending(GasketTrain* train, gchar* buffer)
     priv->pending->buffer = buffer;
 
     sem_post(&priv->pending->sem);
-    _gasket_train_watch_pending(&priv->pending);
+    _gasket_train_watch_pending(priv->pending);
 }
 
 /**
