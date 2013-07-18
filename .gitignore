@@ -9,8 +9,8 @@
 *.gir
 *.typelib
 .deps
+/aclocal.m4
 /src/.libs
-/build-aux
 /Makefile
 /Makefile.old
 /Makefile.in
