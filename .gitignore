@@ -9,12 +9,12 @@
 *.gir
 *.typelib
 .deps
+Makefile.in
 /aclocal.m4
 /build-aux/*
 /src/.libs
 /Makefile
 /Makefile.old
-/Makefile.in
 /autom4te.cache
 /autoscan.log
 /compile
