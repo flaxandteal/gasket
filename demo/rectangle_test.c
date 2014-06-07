@@ -1,7 +1,7 @@
-/* -*- Mode: c; c-basic-offset: 4 -*- 
+/* -*- Mode: c; c-basic-offset: 4 -*-
  *
- * GOBject Introspection Tutorial 
- * 
+ * GOBject Introspection Tutorial
+ *
  * Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
  *
  * To the extent possible under law, the author have dedicated all
@@ -17,14 +17,14 @@
 #include <girepository.h>
 #include "gasket-train.h"
 
-int main (int argc, char *argv[]) 
+int main (int argc, char *argv[])
 {
     GOptionContext *ctx;
     GError *error = NULL;
     gchar* gasket_socket_file;
     gint connect_result;
     const gchar* miniview_id;
-    
+
     GasketTrain *train;
 
     ctx = g_option_context_new(NULL);
