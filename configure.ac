@@ -30,7 +30,9 @@ AC_CONFIG_FILES([
     src/Makefile
     src/client/Makefile
     src/utils/Makefile
-    test/Makefile
+    demo/Makefile
+    demo/cpp/Makefile
+    demo/python/Makefile
     gasket-0.1.pc
 ])
 AC_OUTPUT

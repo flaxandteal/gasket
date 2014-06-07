@@ -293,8 +293,6 @@ _gasket_train_send_real(struct _GasketTrainPending *pending)
     if (buffer != NULL) {
         if (pending->stream != NULL)
         {
-            posted = TRUE;
-            sem_post(&pending->sem);
             to_send = strlen(buffer);
 
             while (to_send > 0)
@@ -302,14 +300,23 @@ _gasket_train_send_real(struct _GasketTrainPending *pending)
                 cancellable = g_cancellable_new();
                 size = g_output_stream_write(pending->stream, buffer, to_send,
                         cancellable, &error);
+
                 to_send -= size;
+
+                if (error != NULL)
+                    break;
             }
+
+            posted = TRUE;
+            sem_post(&pending->sem);
         }
         g_free(buffer);
     }
 
     if (!posted)
         sem_post(&pending->sem);
+
+    return (error == NULL);
 }
 
 /**
@@ -332,7 +339,7 @@ gasket_train_flush (GasketTrain *train)
     if (priv->connected)
     {
         struct _GasketTrainPending* pending;
-        pending = &priv->pending;
+        pending = priv->pending;
 
         _gasket_train_send_real(pending);
     }
@@ -629,5 +636,6 @@ gasket_train_shutdown(GasketTrain* train)
     //FIXME: kill the output thread first, but don't depend on it not waiting
     g_output_stream_close(priv->stream, cancellable, &error);
 
+    priv->stream = NULL;
     priv->connected = FALSE;
 }

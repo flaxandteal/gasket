@@ -143,7 +143,7 @@ CAIRO_CFLAGS = -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/i386-linu
 CAIRO_LIBS = -lcairo -lX11 -lXext  
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -g -O0
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
