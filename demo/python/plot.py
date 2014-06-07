@@ -1,11 +1,11 @@
 import os
 import lxml.etree as ET
-from datetime import datetime
 import re
-import time
-import select
 import sys
 import socket
+import curses
+import svg_histogram
+import time
 
 try :
     from gi.repository import Gasket
@@ -54,16 +54,27 @@ hostname_text = ET.SubElement(
         **hostname_properties)
 hostname_text.text = socket.gethostname()
 
-command = None
-while not command:
-    now = datetime.now()
-    date_text.text = now.strftime("%Y-%m-%d %H:%M:%S")
+histogram_refresh = 3
 
-    train.update_carriage(date_car_id, ET.tostring(g, pretty_print=True))
-    train.redisplay()
+def run(stdscr):
+    stdscr.nodelay(1)
+    stdscr.addstr(20, 5, "Curses and Gasket")
+    curses.curs_set(0)
+    stdscr.refresh()
 
-    command, _, _ = select.select([sys.stdin], [], [], 1)
+    exit = False
+    counter = 0
+    while not exit:
+        if counter % histogram_refresh == 0:
+            histogram_tree = svg_histogram.init_histogram()
+            histogram_svg = ET.tostring(histogram_tree, pretty_print=True)
+            train.update_carriage(date_car_id, histogram_svg)
 
-    train.flush()
+        time.sleep(1)
 
-train.shutdown()
+        exit = (stdscr.getch() == ord('\n'))
+        counter += 1
+
+    train.shutdown()
+
+curses.wrapper(run)
