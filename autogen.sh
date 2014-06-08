@@ -12,7 +12,9 @@ die()
     exit 1
 }
 
-mkdir -p etc
+mkdir -p build-aux
 aclocal || die "aclocal failed"
+libtoolize -f || die "libtoolize failed"
+autoheader || die "autoheader failed"
 automake --add-missing --force-missing --copy --foreign || die "automake failed"
 autoreconf || die "autoreconf failed"

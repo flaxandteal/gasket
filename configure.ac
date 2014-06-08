@@ -26,9 +26,10 @@ PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
     Makefile
-    gasket/Makefile
+    common/Makefile
     src/Makefile
     src/client/Makefile
+    src/server/Makefile
     src/utils/Makefile
     demo/Makefile
     demo/cpp/Makefile

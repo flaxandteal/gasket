@@ -15,7 +15,7 @@
 
 #include <glib.h>
 #include <girepository.h>
-#include "gasket-train.h"
+#include "gasket/client.h"
 
 int main (int argc, char *argv[]) 
 {

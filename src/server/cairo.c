@@ -13,7 +13,7 @@
 #include <cairo.h>
 #include <librsvg/rsvg.h>
 
-#include "server.h"
+#include "gasket/server.h"
 #include "server-private.h"
 
 /**

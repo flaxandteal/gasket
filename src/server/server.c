@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <sys/un.h>
 
-#include "server.h"
+#include "gasket/server.h"
 #include "server-private.h"
 
 gboolean

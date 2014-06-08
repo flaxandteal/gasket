@@ -18,7 +18,7 @@
 #include <gio/gio.h>
 #include <gio/gunixsocketaddress.h>
 #include <libxml/parser.h>
-#include "gasket-train.h"
+#include "gasket/gasket-train.h"
 
 /**
  * SECTION: gasket-train
