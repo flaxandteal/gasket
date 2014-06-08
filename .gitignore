@@ -10,10 +10,11 @@
 *.typelib
 .deps
 Makefile.in
+Makefile
+tmp-*
 /aclocal.m4
 /build-aux/*
 /src/.libs
-/Makefile
 /Makefile.old
 /autom4te.cache
 /autoscan.log
