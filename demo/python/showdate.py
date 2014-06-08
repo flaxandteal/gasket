@@ -12,6 +12,8 @@ try :
 except :
     sys.exit("Gasket not found in GIR")
 
+interactive = "-i" in sys.argv
+
 train = Gasket.Train()
 if train is None or train.station_connect() < 0 :
     sys.exit("Gasket could not connect to station (server)")
@@ -62,7 +64,10 @@ while not command:
     train.update_carriage(date_car_id, ET.tostring(g, pretty_print=True))
     train.redisplay()
 
-    command, _, _ = select.select([sys.stdin], [], [], 1)
+    if interactive:
+        command, _, _ = select.select([sys.stdin], [], [], 1)
+    else:
+        time.sleep(1)
 
     train.flush()
 

@@ -12,6 +12,7 @@
 Makefile.in
 Makefile
 tmp-*
+/m4
 /aclocal.m4
 /build-aux/*
 /src/.libs
