@@ -3,9 +3,19 @@
 #define GASKET_SERVER_H
 
 #include <glib-object.h>
-#include <cairo.h>
+
+struct _cairo;
+typedef struct _cairo cairo_t;
 
 G_BEGIN_DECLS
+
+#define GASKET_SERVER_MAXFILEPATH 1024
+#define GASKET_SERVER_CABOOSE ("__GASKET_CABOOSE__\n")
+#define GASKET_SERVER_STATION_RESET ("__GASKET_STATION_RESET__")
+#define GASKET_SERVER_ENVIRONMENT_SERVER_ID ("GASKET_ID")
+#define GASKET_SERVER_ENVIRONMENT_SERVER_SOCKET ("GASKET_SOCKET")
+#define GASKET_SERVER_TMPDIR_PRINTF ("/tmp/gasket-%d")
+#define GASKET_SERVER_SOCKET_PRINTF ("/tmp/gasket-%d/gasket_track_%s.sock")
 
 /**
  * GasketServerError:
@@ -44,7 +54,6 @@ struct _GasketServerClass {
 GType gasket_server_get_type(void);
 
 GasketServer *gasket_server_new (GError **error);
-GasketServer *gasket_server_new_with_uuid(const gchar* uuid, GError **error);
 
 gboolean gasket_server_set_uuid (GasketServer *gasket, const gchar* uuid_str);
 gboolean gasket_server_make_socket (GasketServer *gasket);
@@ -56,6 +65,7 @@ void gasket_server_set_invalidation_function (GasketServer *gasket, GSourceFunc 
 void gasket_server_set_target_extents(GasketServer *gasket, int row, int col, int row_count, int column_count, long width, long height);
 void gasket_server_close(GasketServer *gasket);
 gpointer gasket_server_listen (GasketServer *gasket);
+char* gasket_server_pass_thru(GasketServer *gasket);
 
 G_END_DECLS
 

@@ -9,61 +9,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#include <cairo.h>
-#include <librsvg/rsvg.h>
 
 #include "server.h"
 #include "server-private.h"
-
-#define GASKET_SERVER_MAXFILEPATH 1024
-#define GASKET_SERVER_CABOOSE ("__GASKET_CABOOSE__\n")
-#define GASKET_SERVER_STATION_RESET ("__GASKET_STATION_RESET__")
-#define GASKET_SERVER_ENVIRONMENT_SERVER_ID ("GASKET_ID")
-#define GASKET_SERVER_ENVIRONMENT_SERVER_SOCKET ("GASKET_SOCKET")
-#define GASKET_SERVER_TMPDIR_PRINTF ("/tmp/gasket-%d")
-#define GASKET_SERVER_SOCKET_PRINTF ("/tmp/gasket-%d/gasket_track_%s.sock")
-
-struct _GasketServerConnectionData {
-    GasketServer *gasket;
-    unsigned int connection_index;
-};
-
-struct _GasketServerTargetExtents {
-    int row;
-    int col;
-
-    int row_count;
-    int col_count;
-
-    long width;
-    long height;
-};
-
-typedef struct _GasketServerTrain {
-    GString* svg;
-    gboolean invalid;
-    void* rsvg_handle;
-} GasketServerTrain;
-
-struct _GasketServerPrivate {
-    uuid_t* uuid;
-
-    struct _GasketServerTargetExtents extents;
-    GHashTable* train_hash;
-
-    GSourceFunc invalidation_function;
-    gpointer invalidation_data;
-
-    unsigned int socket;
-    gboolean socket_made;
-    int parent_pid;
-};
-
-struct _GasketServerUpdateSVGData {
-    int connection_index;
-    GString* svg;
-    GasketServer* gasket;
-};
 
 gboolean
 _gasket_server_close_socket(GasketServer *gasket)
@@ -173,7 +121,7 @@ gasket_server_init(GasketServer* gasket)
     uuid_t* uuid = (uuid_t*)malloc(sizeof(uuid_t));
     uuid_generate(*uuid);
 
-    priv->uuid = *uuid;
+    priv->uuid = uuid;
     priv->train_hash = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, g_free);
     priv->socket = 0;
     priv->socket_made = FALSE;
@@ -586,11 +534,11 @@ _gasket_server_handle_new_connection(struct _GasketServerConnectionData *data)
         if (train_set_index > 1) {
             if (train_set_index == 2) {
                 g_string_append_printf(svg, "%s", train_set[0]);
-        FILE *f=fopen("/tmp/testc", "a"); fprintf(f, "%s*\n", train_set[0]); fclose(f);
+                FILE *f=fopen("/tmp/testc", "a"); fprintf(f, "%s*\n", train_set[0]); fclose(f);//RMV
             }
             else {
                 g_string_printf(svg, "%s", train_set[train_set_index - 3]);
-        FILE *f=fopen("/tmp/testc", "a"); fprintf(f, "<%s>\n", train_set[train_set_index - 3]); fclose(f);
+                FILE *f=fopen("/tmp/testc", "a"); fprintf(f, "<%s>\n", train_set[train_set_index - 3]); fclose(f);//RMV
             }
 
             /* Clean whitespace */
@@ -720,108 +668,6 @@ gasket_server_listen(GasketServer *gasket)
     return NULL;
 }
 
-///**
-// * gasket_server_paint_overlay:
-// * @gasket: a #GasketServer
-// *
-// * Paint an overlay during the cairo write.
-// */
-//void
-//gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
-//{
-//    GasketServerPrivate *priv = gasket->priv;
-//
-//    struct _GasketServerTargetExtents *extents = &priv->extents;
-//
-//    RsvgHandle *handle, *new_handle;
-//    GString *svg;
-//    RsvgDimensionData dims;
-//
-//    GError *err;
-//    FILE* err_back; 
-//    gchar err_back_filename[GASKET_SERVER_MAXFILEPATH], uuid_str[1024], tmpdir[GASKET_SERVER_MAXFILEPATH];
-//
-//    GHashTableIter iter;
-//    gpointer k, v;
-//    gint connection_index;
-//    GasketServerTrain* train;
-//
-//    /* Only bother if we are initialized */
-//    if (priv->uuid == NULL || g_hash_table_size(priv->train_hash) == 0)
-//        return;
-//
-//    /* Locate the current tmpdir */
-//    uuid_unparse(*gasket->priv->uuid, uuid_str);
-//    sprintf(tmpdir, GASKET_SERVER_TMPDIR_PRINTF, gasket->priv->parent_pid);
-//    sprintf(err_back_filename, "%s/%s", tmpdir, "gasket_errback.svg");
-//
-//    //TODO: double-check explanation
-//    /* Ensure we are not located on the boundaries of the window */
-//    if ((CLAMP(extents->col, 0, extents->col_count - 1) != extents->col) ||
-//        (CLAMP(extents->row, 0, extents->row_count - 1) != extents->row))
-//        return;
-//
-//    g_hash_table_iter_init(&iter, priv->train_hash);
-//
-//    while (g_hash_table_iter_next(&iter, &k, &v))
-//    {
-//        connection_index = *(int*)k;
-//        train = (GasketServerTrain*)v;
-//
-//        /* Pick out SVG content and handle from Gasket object */
-//        handle = (RsvgHandle*)train->rsvg_handle;
-//        new_handle = NULL;
-//        svg = train->svg;
-//
-//        err = NULL;
-//        /* Only regenerate the RSVG if marked as invalid */
-//        if (svg != NULL && train->invalid) {
-//            if (svg->len > 0) {
-//                _gasket_debug_print (GASKET_DEBUG_SERVER,
-//                    "Re-parsing Train #%d (=connection fd) as flagged\n",
-//                    connection_index);
-//                new_handle = rsvg_handle_new_from_data(svg->str, strlen(svg->str), &err);
-//                if (err == NULL) {
-//                    if (handle != NULL) {
-//                        g_object_unref(handle);
-//                    }
-//                    handle = new_handle;
-//                } else {
-//                    fprintf(stderr, "Creating handle problem: %s\n", err->message);
-//                    g_error_free(err);
-//                    err = NULL;
-//                    err_back = fopen(err_back_filename, "w");
-//                    if (err_back == NULL) {
-//                        perror("Couldn't save problematic SVG backup");
-//                    } else {
-//                        fprintf(err_back, "%s", svg->str);
-//                        fclose(err_back);
-//                    }
-//                }
-//            } else {
-//                if (handle != NULL) {
-//                    g_object_unref(handle);
-//                }
-//                handle = NULL;
-//            }
-//
-//            train->invalid = FALSE;
-//        }
-//
-//        /* Get dimension data to rescale appropriately */
-//        if (handle != NULL) {
-//            err = NULL;
-//            rsvg_handle_get_dimensions(handle, &dims);
-//
-//            cairo_save(cr);
-//            cairo_scale(cr, extents->width, extents->height);
-//            rsvg_handle_render_cairo(handle, cr);
-//            cairo_restore(cr);
-//        }
-//        train->rsvg_handle = handle;
-//    }
-//}
-
 void
 gasket_server_child_setup(GasketServer *gasket)
 {
@@ -883,103 +729,45 @@ gasket_server_close(GasketServer *gasket)
 }
 
 /**
- * gasket_server_paint_overlay:
+ * gasket_server_pass_thru
  * @gasket: a #GasketServer
  *
- * Paint an overlay during the cairo write.
+ * Return the combined SVG in storage. This should
+ * be freed by the caller.
  */
-void
-gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
+char*
+gasket_server_pass_thru(GasketServer *gasket)
 {
     GasketServerPrivate *priv = gasket->priv;
-
-    struct _GasketServerTargetExtents *extents = &priv->extents;
-
-    RsvgHandle *handle, *new_handle;
-    GString *svg;
-    RsvgDimensionData dims;
-
-    GError *err;
-    FILE* err_back; 
-    gchar err_back_filename[GASKET_SERVER_MAXFILEPATH], uuid_str[1024], tmpdir[GASKET_SERVER_MAXFILEPATH];
 
     GHashTableIter iter;
     gpointer k, v;
     gint connection_index;
     GasketServerTrain* train;
-
-    /* Only bother if we are initialized */
-    if (priv->uuid == NULL || g_hash_table_size(priv->train_hash) == 0)
-        return;
-
-    /* Locate the current tmpdir */
-    uuid_unparse(*gasket->priv->uuid, uuid_str);
-    sprintf(tmpdir, GASKET_SERVER_TMPDIR_PRINTF, gasket->priv->parent_pid);
-    sprintf(err_back_filename, "%s/%s", tmpdir, "gasket_errback.svg");
-
-    //TODO: double-check explanation
-    /* Ensure we are not located on the boundaries of the window */
-    if ((CLAMP(extents->col, 0, extents->col_count - 1) != extents->col) ||
-        (CLAMP(extents->row, 0, extents->row_count - 1) != extents->row))
-        return;
+    char* combined_svg_string;
 
     g_hash_table_iter_init(&iter, priv->train_hash);
+
+    GString *svg;
+    GString *combined_svg = g_string_new(NULL);
+
+    g_string_append(combined_svg, GASKET_SERVER_CABOOSE);
 
     while (g_hash_table_iter_next(&iter, &k, &v))
     {
         connection_index = *(int*)k;
         train = (GasketServerTrain*)v;
-
-        /* Pick out SVG content and handle from Gasket object */
-        handle = (RsvgHandle*)train->rsvg_handle;
-        new_handle = NULL;
         svg = train->svg;
 
-        err = NULL;
-        /* Only regenerate the RSVG if marked as invalid */
-        if (svg != NULL && train->invalid) {
-            if (svg->len > 0) {
-                fprintf(stderr,
-                    "Re-parsing Train #%d (=connection fd) as flagged\n",
-                    connection_index);
-                new_handle = rsvg_handle_new_from_data(svg->str, strlen(svg->str), &err);
-                if (err == NULL) {
-                    if (handle != NULL) {
-                        g_object_unref(handle);
-                    }
-                    handle = new_handle;
-                } else {
-                    fprintf(stderr, "Creating handle problem: %s\n", err->message);
-                    g_error_free(err);
-                    err = NULL;
-                    err_back = fopen(err_back_filename, "w");
-                    if (err_back == NULL) {
-                        perror("Couldn't save problematic SVG backup");
-                    } else {
-                        fprintf(err_back, "%s", svg->str);
-                        fclose(err_back);
-                    }
-                }
-            } else {
-                if (handle != NULL) {
-                    g_object_unref(handle);
-                }
-                handle = NULL;
-            }
-
-            train->invalid = FALSE;
-        }
-
-        /* Get dimension data to rescale appropriately */
-        if (handle != NULL) {
-            err = NULL;
-            rsvg_handle_get_dimensions(handle, &dims);
-
-            cairo_save(cr);
-            cairo_scale(cr, extents->width, extents->height);
-            rsvg_handle_render_cairo(handle, cr);
-            cairo_restore(cr);
-        }
-        train->rsvg_handle = handle;
+        if (svg != NULL && train->invalid && svg->len >0)
+            g_string_append(combined_svg, svg->str);
     }
+
+    g_string_append(combined_svg, GASKET_SERVER_CABOOSE);
+
+    combined_svg_string = g_strdup(combined_svg->str);
+
+    g_string_free(combined_svg, TRUE);
+
+    return combined_svg_string;
 }
