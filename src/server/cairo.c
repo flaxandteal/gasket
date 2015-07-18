@@ -67,9 +67,10 @@ gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
         /* Only regenerate the RSVG if marked as invalid */
         if (svg != NULL && train->invalid) {
             if (svg->len > 0) {
-                fprintf(stderr,
-                    "Re-parsing Train #%d (=connection fd) as flagged\n",
-                    connection_index);
+                //TODO: add in debug flag
+                // fprintf(stderr,
+                //     "Re-parsing Train #%d (=connection fd) as flagged\n",
+                //     connection_index);
                 new_handle = rsvg_handle_new_from_data(svg->str, strlen(svg->str), &err);
                 if (err == NULL) {
                     if (handle != NULL) {
@@ -77,6 +78,7 @@ gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
                     }
                     handle = new_handle;
                 } else {
+                    //TODO: this really needs tidied and secured
                     fprintf(stderr, "Creating handle problem: %s\n", err->message);
                     g_error_free(err);
                     err = NULL;
