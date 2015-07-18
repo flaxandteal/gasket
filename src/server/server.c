@@ -57,9 +57,10 @@ _gasket_server_setenv(int parent_pid, uuid_t *uuid_ptr)
     char uuid_str[300], socket_str[330];
     uuid_unparse(*uuid_ptr, uuid_str);
 
-    fprintf(stderr,
-        "Setting up Gasket for child pty: UUID = %s\n",
-        uuid_str);
+    //TODO: add debug flag
+    // fprintf(stderr,
+    //     "Setting up Gasket for child pty: UUID = %s\n",
+    //     uuid_str);
 
     /* Set the Gasket socket path from the UUID */
     sprintf(socket_str, GASKET_SERVER_SOCKET_PRINTF, parent_pid, uuid_str);
