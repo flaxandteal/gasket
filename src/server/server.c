@@ -340,9 +340,10 @@ gasket_server_make_socket(GasketServer* gasket)
     /* Get a string representation of the UUID */
     uuid_unparse(*priv->uuid, uuid_str);
 
-    fprintf(stderr,
-      "Making socket for Gasket with UUID: %s\n",
-      uuid_str);
+    //TODO: set-up debug flag
+    // fprintf(stderr,
+    //   "Making socket for Gasket with UUID: %s\n",
+    //   uuid_str);
 
     /* Set up the socket itself
      *
@@ -395,8 +396,9 @@ gasket_server_make_socket(GasketServer* gasket)
 void
 gasket_server_launch_listen(GasketServer *gasket)
 {
-    fprintf(stderr,
-      "Launching a listener thread for Gasket\n");
+    //TODO: set up a debug flag
+    // fprintf(stderr,
+    //   "Launching a listener thread for Gasket\n");
 
     /* Start the listener */
     g_thread_new("gasket_station", (GThreadFunc)gasket_server_listen, gasket);
@@ -532,15 +534,6 @@ _gasket_server_handle_new_connection(struct _GasketServerConnectionData *data)
 
         /* If we find a caboose, process and continue */
         if (train_set_index > 1) {
-            if (train_set_index == 2) {
-                g_string_append_printf(svg, "%s", train_set[0]);
-                FILE *f=fopen("/tmp/testc", "a"); fprintf(f, "%s*\n", train_set[0]); fclose(f);//RMV
-            }
-            else {
-                g_string_printf(svg, "%s", train_set[train_set_index - 3]);
-                FILE *f=fopen("/tmp/testc", "a"); fprintf(f, "<%s>\n", train_set[train_set_index - 3]); fclose(f);//RMV
-            }
-
             /* Clean whitespace */
             //FIXME: based on its code definition, this updates GString appropriately - it seems abusive but no better alternative presents itself
             g_strstrip(svg->str);
@@ -582,7 +575,8 @@ _gasket_server_handle_new_connection(struct _GasketServerConnectionData *data)
     }
 
     if (err != NULL) {
-        fprintf(stderr, "Looping: %s\n", err->message);
+        //TODO: set up debug flag
+        // fprintf(stderr, "Looping: %s\n", err->message);
         g_error_free(err);
     }
 

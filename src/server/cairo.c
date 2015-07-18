@@ -65,7 +65,6 @@ gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
 
         err = NULL;
         /* Only regenerate the RSVG if marked as invalid */
-	fprintf(stderr, "Train is %d", train->invalid);
         if (svg != NULL && train->invalid) {
             if (svg->len > 0) {
                 fprintf(stderr,
