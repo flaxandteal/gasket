@@ -61,14 +61,15 @@ while not command:
     now = datetime.now()
     date_text.text = now.strftime("%Y-%m-%d %H:%M:%S")
 
-    train.update_carriage(date_car_id, ET.tostring(g, pretty_print=True))
-    train.redisplay()
+    xml = ET.tostring(g, pretty_print=True)
+    train.update_carriage(date_car_id, xml)
+    #train.redisplay()
 
     if interactive:
         command, _, _ = select.select([sys.stdin], [], [], 1)
     else:
         time.sleep(1)
 
-    train.flush()
+    #train.flush()
 
 train.shutdown()

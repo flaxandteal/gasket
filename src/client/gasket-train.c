@@ -111,7 +111,7 @@ gasket_train_init (GasketTrain *object)
     sem_init(&pending->sem, 0, 1);
 
     pending->cx =  g_main_context_new();
-    g_thread_new("Main Loop", _gasket_train_main_loop_init, pending);
+    g_thread_new("gasket-clnt-ml", _gasket_train_main_loop_init, pending);
 }
 
 static void
@@ -273,6 +273,8 @@ _gasket_train_watch_pending(struct _GasketTrainPending *pending)
     g_source_set_callback(send_source, _gasket_train_send_real, pending, NULL);
     g_source_attach(send_source, pending->cx);
 
+    g_source_unref(send_source);
+
     return FALSE;
 }
 
@@ -316,7 +318,15 @@ _gasket_train_send_real(struct _GasketTrainPending *pending)
     if (!posted)
         sem_post(&pending->sem);
 
-    return (error == NULL);
+    /**
+     * We don't panic if the error is that the stream has closed,
+     * in case this is just unfortunate timing while the stream
+     * is being closed, in which case the user has effectively
+     * said they no longer want this sent.
+     */
+    g_assert(error == NULL || error->code == G_IO_ERROR_CLOSED);
+
+    return FALSE;
 }
 
 /**

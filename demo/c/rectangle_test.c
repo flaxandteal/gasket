@@ -24,7 +24,7 @@ int main (int argc, char *argv[])
     gchar* gasket_socket_file;
     gint connect_result;
     const gchar* miniview_id;
-    
+
     GasketTrain *train;
 
     ctx = g_option_context_new(NULL);
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
 
     connect_result = gasket_train_station_connect(train);
     gasket_train_station_send(train, "");
-    //gasket_train_station_reset(train);
+    gasket_train_station_reset(train);
 
     miniview_id = gasket_train_add_carriage(train, "Miniview");
     printf("MINIVIEW ID : %s\n", miniview_id);

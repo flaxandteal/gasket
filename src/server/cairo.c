@@ -51,12 +51,6 @@ gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
     sprintf(tmpdir, GASKET_SERVER_TMPDIR_PRINTF, gasket->priv->parent_pid);
     sprintf(err_back_filename, "%s/%s", tmpdir, "gasket_errback.svg");
 
-    //TODO: double-check explanation
-    /* Ensure we are not located on the boundaries of the window */
-    if ((CLAMP(extents->col, 0, extents->col_count - 1) != extents->col) ||
-        (CLAMP(extents->row, 0, extents->row_count - 1) != extents->row))
-        return;
-
     g_hash_table_iter_init(&iter, priv->train_hash);
 
     while (g_hash_table_iter_next(&iter, &k, &v))
@@ -71,6 +65,7 @@ gasket_server_paint_overlay(GasketServer *gasket, cairo_t* cr)
 
         err = NULL;
         /* Only regenerate the RSVG if marked as invalid */
+	fprintf(stderr, "Train is %d", train->invalid);
         if (svg != NULL && train->invalid) {
             if (svg->len > 0) {
                 fprintf(stderr,
