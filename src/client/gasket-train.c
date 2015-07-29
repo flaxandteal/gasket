@@ -1,16 +1,29 @@
 /* -*- Mode: c; c-basic-offset: 4 -*- 
  *
- * GOBject Introspection Tutorial 
- * 
- * Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
+ * Copyright (C) 2013- Phil Weir
  *
- * To the extent possible under law, the author have dedicated all
- * copyright and related and neighboring rights to this software to
- * the public domain worldwide. This software is distributed without
- * any warranty.
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, distribute with modifications, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * CC0 Public Domain Dedication:
- * http://creativecommons.org/publicdomain/zero/1.0/
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Based on GOBject Introspection Tutorial by
+ * Simon Kågedal Reimer <skagedal@gmail.com> (2013)
+ * (Tutorial being licensed CC0 PD)
  */
 
 #include <semaphore.h>
@@ -29,7 +42,7 @@
 
 G_DEFINE_TYPE (GasketTrain, gasket_train, G_TYPE_OBJECT)
 
-#define GASKET_TRAIN_GET_PRIVATE(o)	\
+#define GASKET_TRAIN_GET_PRIVATE(o)        \
     (G_TYPE_INSTANCE_GET_PRIVATE ((o), GASKET_TRAIN_TYPE, GasketTrainPrivate))
 
 /* Downtime between checking the output buffer */
@@ -51,7 +64,7 @@ struct _GasketTrainPending {
 };
 
 struct _GasketTrainPrivate {
-    gchar *track;		 /* The socket connection between GUI and CLI */
+    gchar *track;                 /* The socket connection between GUI and CLI */
     gboolean active;             /* On/off toggle */
     gboolean connected;          /* Whether the socket has been connected to the server */
     GOutputStream* stream;       /* Socket from here to server */
@@ -127,40 +140,40 @@ gasket_train_finalize (GObject *object)
 
 static void
 gasket_train_set_property (GObject      *object,
-			   guint         property_id,
-			   const GValue *value,
-			   GParamSpec   *pspec)
+                           guint         property_id,
+                           const GValue *value,
+                           GParamSpec   *pspec)
 {
     GasketTrainPrivate *priv = GASKET_TRAIN_GET_PRIVATE (object);
 
     switch (property_id) {
     case PROP_ACTIVE:
-	priv->active = g_value_get_boolean(value);
+        priv->active = g_value_get_boolean(value);
         gasket_train_clear (GASKET_TRAIN(object));
-	break;
+        break;
 
     default:
-	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-	break;
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+        break;
     }
 }
 
 static void
 gasket_train_get_property (GObject    *object,
-			   guint       property_id,
-			   GValue     *value,
-			   GParamSpec *pspec)
+                           guint       property_id,
+                           GValue     *value,
+                           GParamSpec *pspec)
 {
     GasketTrainPrivate *priv = GASKET_TRAIN_GET_PRIVATE (object);
 
     switch (property_id) {
     case PROP_ACTIVE:
-	g_value_set_boolean (value, priv->active);
-	break;
+        g_value_set_boolean (value, priv->active);
+        break;
 
     default:
-	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-	break;
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+        break;
     }
 }
 
@@ -179,16 +192,16 @@ gasket_train_class_init (GasketTrainClass *klass)
      * On/off toggle (clears on change).
      */
     obj_properties[PROP_ACTIVE] = 
-	g_param_spec_boolean ("active",
-			      "Active",
-			      "On/off toggle.",
-			      TRUE,
-			      G_PARAM_READWRITE |
-			      G_PARAM_CONSTRUCT);
+        g_param_spec_boolean ("active",
+                              "Active",
+                              "On/off toggle.",
+                              TRUE,
+                              G_PARAM_READWRITE |
+                              G_PARAM_CONSTRUCT);
 
     g_object_class_install_properties (object_class,
-				       N_PROPERTIES,
-				       obj_properties);
+                                       N_PROPERTIES,
+                                       obj_properties);
 
     g_type_class_add_private (object_class, sizeof (GasketTrainPrivate));
 }

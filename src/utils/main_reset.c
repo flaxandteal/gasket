@@ -1,13 +1,12 @@
 /* -*- Mode: c; c-basic-offset: 4 -*- 
  *
- * GOBject Introspection Tutorial 
- * 
- * Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
+ * Copyright (C) 2013- Phil Weir
  *
- * To the extent possible under law, the author have dedicated all
- * copyright and related and neighboring rights to this software to
- * the public domain worldwide. This software is distributed without
- * any warranty.
+ * This file is based on GOBject Introspection Tutorial by
+ * Simon Kågedal Reimer <skagedal@gmail.com> (2013).
+ *
+ * This file, as part of Gasket is placed in the
+ * public domain (CC0-PD).
  *
  * CC0 Public Domain Dedication:
  * http://creativecommons.org/publicdomain/zero/1.0/

@@ -1,8 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 4 -*- 
  *
- * GOBject Introspection Tutorial 
- * 
- * Written in 2013 by Simon Kågedal Reimer <skagedal@gmail.com>
+ * Written 2013- by Phil Weir
  *
  * To the extent possible under law, the author have dedicated all
  * copyright and related and neighboring rights to this software to
