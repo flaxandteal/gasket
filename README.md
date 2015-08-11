@@ -12,7 +12,7 @@ with vector graphics.
 
 This component is the library that may be used by clients to simplify the process of interacting
 with Gasket, as well as providing certain server-side routines. While it must be available to the
-server, that is the Gnome Terminal / VTENote that it is not compulsory for clients to use this
+server, that is the Gnome Terminal / VTE, Note that it is not compulsory for clients to use this
 library. The Gasket protocol is extremely simple, SVG with certain markers, and can be produced
 by a shell-script and piped to the terminal's Gasket socket with little difficulty.
 
